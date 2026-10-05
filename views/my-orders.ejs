@@ -1,0 +1,36 @@
+<%- include('partials/head', { title: 'My Orders' }) %>
+
+<h1 style="<%- s.h1 %>">My Orders</h1>
+<p style="<%- s.muted %>">All your past and current orders in one place.</p>
+
+<% if (!orders.length) { %>
+  <div style="<%- s.card %>">
+    <p style="<%- s.muted %>">You haven't placed any orders yet.</p>
+    <a href="/" style="<%- s.btnGhost %>">Browse restaurants →</a>
+  </div>
+<% } else { %>
+  <div style="<%- s.card %>;overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;">
+      <tr>
+        <th style="<%- s.th %>">Order ID</th>
+        <th style="<%- s.th %>">Date</th>
+        <th style="<%- s.th %>">Items</th>
+        <th style="<%- s.th %>">Total</th>
+        <th style="<%- s.th %>">Status</th>
+      </tr>
+      <% orders.forEach(o => { %>
+        <tr>
+          <td style="<%- s.td %>"><%= o.id %></td>
+          <td style="<%- s.td %>"><%= new Date(o.createdAt).toLocaleString() %></td>
+          <td style="<%- s.td %>">
+            <%- (o.items || []).map(i => `${i.qty} × ${i.name}`).join('<br>') %>
+          </td>
+          <td style="<%- s.td %>">₹<%= o.total %></td>
+          <td style="<%- s.td %>"><%= o.status %></td>
+        </tr>
+      <% }) %>
+    </table>
+  </div>
+<% } %>
+
+<%- include('partials/foot') %>

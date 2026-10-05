@@ -1,0 +1,96 @@
+<%- include('partials/head', { title: 'Dashboard' }) %>
+
+<% if (registered) { %>
+  <div style="<%- s.okBox %>">Restaurant registered successfully. Its order queue is ready below.</div>
+<% } %>
+
+<h1 style="<%- s.h1 %>">
+  <%= selected ? selected.name : (currentUser && currentUser.role === 'owner' ? 'My Restaurants' : 'My Orders') %>
+</h1>
+<p style="<%- s.muted %>">
+  <%= currentUser && currentUser.role === 'owner'
+      ? 'Manage incoming orders for your restaurant.'
+      : 'Track your past and current orders.' %>
+</p>
+
+<% if (currentUser && currentUser.role === 'owner' && restaurants.length) { %>
+  <div style="<%- s.card %>">
+    <form method="GET" action="/dashboard">
+      <label style="<%- s.label %>">Show orders for
+        <select name="restaurant" style="<%- s.input %>" onchange="this.form.submit()">
+          <% restaurants.forEach(r => { %>
+            <option value="<%= r.id %>" <%= selected && selected.id === r.id ? 'selected' : '' %>>
+              <%= r.name %>
+            </option>
+          <% }) %>
+        </select>
+      </label>
+    </form>
+  </div>
+<% } %>
+
+<div style="<%- s.card %>;overflow-x:auto;">
+  <% if (!orders.length) { %>
+    <p style="<%- s.muted %>">
+      No orders yet.
+      <% if (currentUser && currentUser.role === 'owner') { %>
+        <a href="/order<%= selected ? '?restaurant=' + selected.id : '' %>" style="<%- s.btnGhost %>">
+          Place a test order →
+        </a>
+      <% } else { %>
+        <a href="/order" style="<%- s.btnGhost %>">Browse restaurants →</a>
+      <% } %>
+    </p>
+  <% } else { %>
+    <table style="width:100%;border-collapse:collapse;">
+      <tr>
+        <th style="<%- s.th %>">Order</th>
+        <th style="<%- s.th %>">Customer</th>
+        <th style="<%- s.th %>">Items</th>
+        <th style="<%- s.th %>">Total</th>
+        <th style="<%- s.th %>">Status</th>
+        <% if (currentUser && currentUser.role === 'owner') { %>
+          <th style="<%- s.th %>">Update</th>
+        <% } %>
+      </tr>
+      <% orders.forEach(o => { %>
+        <tr>
+          <td style="<%- s.td %>"><%= o.id %></td>
+          <td style="<%- s.td %>">
+            <%= o.customerName %><br />
+            <span style="color:#5b6773;"><%= o.phone %></span>
+          </td>
+          <td style="<%- s.td %>">
+            <%- (o.items || []).map(i => `${i.qty} × ${i.name}`).join('<br>') %>
+          </td>
+          <td style="<%- s.td %>">₹<%= o.total %></td>
+          <td style="<%- s.td %>">
+            <%
+              const colors = {
+                'Received': '#5b6773',
+                'Preparing': '#F2A93B',
+                'Out for Delivery': '#1E4D3A',
+                'Delivered': '#2E7D32',
+                'Cancelled': '#D93A2B'
+              };
+            %>
+            <span style="<%- s.badge(colors[o.status] || '#5b6773') %>"><%= o.status %></span>
+          </td>
+          <% if (currentUser && currentUser.role === 'owner') { %>
+            <td style="<%- s.td %>">
+              <form method="POST" action="/orders/<%= o.id %>/status" style="margin:0;">
+                <select name="status" onchange="this.form.submit()" style="padding:6px;border:1px solid #D5DBE1;border-radius:6px;">
+                  <% ['Received', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled'].forEach(st => { %>
+                    <option value="<%= st %>" <%= o.status === st ? 'selected' : '' %>><%= st %></option>
+                  <% }); %>
+                </select>
+              </form>
+            </td>
+          <% } %>
+        </tr>
+      <% }) %>
+    </table>
+  <% } %>
+</div>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,89 @@
+<%- include('partials/head', { title: 'Manage Menu' }) %>
+<h1 style="<%- s.h1 %>">Manage Menu</h1>
+<p style="<%- s.muted %>">Add, remove, or toggle availability of menu items.</p>
+<% if (!restaurants.length) { %>
+  <div style="<%- s.warnBox %>">
+    You haven't registered a restaurant yet.
+    <a href="/restaurants/register" style="<%- s.btnGhost %>">Register now →</a>
+  </div>
+<% } else { %>
+
+  <div style="<%- s.card %>">
+    <form method="GET" action="/admin/menu">
+      <label style="<%- s.label %>">Select Restaurant
+        <select name="restaurant" style="<%- s.input %>" onchange="this.form.submit()">
+          <% restaurants.forEach(r => { %>
+            <option value="<%= r.id %>" <%= selected && selected.id === r.id ? 'selected' : '' %>>
+              <%= r.name %>
+            </option>
+          <% }) %>
+        </select>
+      </label>
+    </form>
+  </div>
+
+  <% if (selected) { %>
+    <div style="<%- s.card %>">
+      <h2 style="<%- s.h2 %>">Add New Item to <%= selected.name %></h2>
+      <% if (Object.keys(errors).length) { %>
+        <div style="<%- s.errBox %>">Please fix the errors below.</div>
+      <% } %>
+      <form method="POST" action="/admin/menu">
+        <input type="hidden" name="restaurantId" value="<%= selected.id %>" />
+
+        <label style="<%- s.label %>">Item Name</label>
+        <input name="name" value="<%= values.name || '' %>" style="<%- s.input %>" />
+        <% if (errors.name) { %><span style="<%- s.err %>"><%= errors.name %></span><% } %>
+
+        <label style="<%- s.label %>">Price (₹)</label>
+        <input type="number" name="price" min="1" value="<%= values.price || '' %>" style="<%- s.input %>" />
+        <% if (errors.price) { %><span style="<%- s.err %>"><%= errors.price %></span><% } %>
+
+        <button type="submit" style="<%- s.btn %>">Add Item</button>
+      </form>
+    </div>
+
+    <div style="<%- s.card %>">
+      <h2 style="<%- s.h2 %>">Current Menu (<%= selected.menu.length %> items)</h2>
+      <% if (!selected.menu.length) { %>
+        <p style="<%- s.muted %>">No items yet. Add your first item above.</p>
+      <% } else { %>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <th style="<%- s.th %>">Item</th>
+            <th style="<%- s.th %>">Price</th>
+            <th style="<%- s.th %>">Status</th>
+            <th style="<%- s.th %>">Actions</th>
+          </tr>
+          <% selected.menu.forEach(m => { %>
+            <tr>
+              <td style="<%- s.td %>"><%= m.name %></td>
+              <td style="<%- s.td %>">₹<%= m.price %></td>
+              <td style="<%- s.td %>">
+                <%= m.available ? '✅ Available' : '❌ Out of stock' %>
+              </td>
+              <td style="<%- s.td %>">
+                <form method="POST" action="/admin/menu/<%= m.id %>/toggle" style="display:inline;margin:0;">
+                  <input type="hidden" name="restaurantId" value="<%= selected.id %>" />
+                  <button type="submit" style="background:none;border:0;color:#1E4D3A;cursor:pointer;font:inherit;font-weight:700;">
+                    <%= m.available ? 'Mark Out' : 'Mark Available' %>
+                  </button>
+                </form>
+                &nbsp;|&nbsp;
+                <form method="POST" action="/admin/menu/<%= m.id %>/delete" style="display:inline;margin:0;"
+                      onsubmit="return confirm('Delete this item?');">
+                  <input type="hidden" name="restaurantId" value="<%= selected.id %>" />
+                  <button type="submit" style="background:none;border:0;color:#D93A2B;cursor:pointer;font:inherit;font-weight:700;">
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </table>
+      <% } %>
+    </div>
+  <% } %>
+<% } %>
+
+<%- include('partials/foot') %>

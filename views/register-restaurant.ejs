@@ -1,0 +1,42 @@
+<%- include('partials/head', { title: 'Register Restaurant' }) %>
+
+<h1 style="<%- s.h1 %>">Register Your Restaurant</h1>
+<p style="<%- s.muted %>">Add your restaurant to QuickBite and start receiving orders.</p>
+
+<% if (Object.keys(errors).length) { %>
+  <div style="<%- s.errBox %>">Please fix the errors below.</div>
+<% } %>
+
+<div style="<%- s.card %>">
+  <form method="POST" action="/restaurants/register">
+
+    <label style="<%- s.label %>">Restaurant Name</label>
+    <input name="name" value="<%= values.name || '' %>" style="<%- s.input %>" />
+    <% if (errors.name) { %><span style="<%- s.err %>"><%= errors.name %></span><% } %>
+
+    <label style="<%- s.label %>">Email</label>
+    <input type="email" name="email" value="<%= values.email || '' %>" style="<%- s.input %>" />
+    <% if (errors.email) { %><span style="<%- s.err %>"><%= errors.email %></span><% } %>
+
+    <label style="<%- s.label %>">Phone</label>
+    <input name="phone" value="<%= values.phone || '' %>" style="<%- s.input %>" />
+    <% if (errors.phone) { %><span style="<%- s.err %>"><%= errors.phone %></span><% } %>
+
+    <label style="<%- s.label %>">Cuisine</label>
+    <select name="cuisine" style="<%- s.input %>">
+      <option value="">-- Choose --</option>
+      <% ['North Indian', 'South Indian', 'Chinese', 'Fast Food', 'Desserts'].forEach(c => { %>
+        <option value="<%= c %>" <%= values.cuisine === c ? 'selected' : '' %>><%= c %></option>
+      <% }); %>
+    </select>
+    <% if (errors.cuisine) { %><span style="<%- s.err %>"><%= errors.cuisine %></span><% } %>
+
+    <label style="<%- s.label %>">Full Address</label>
+    <textarea name="address" style="<%- s.input %>"><%= values.address || '' %></textarea>
+    <% if (errors.address) { %><span style="<%- s.err %>"><%= errors.address %></span><% } %>
+
+    <button type="submit" style="<%- s.btn %>">Register Restaurant</button>
+  </form>
+</div>
+
+<%- include('partials/foot') %>

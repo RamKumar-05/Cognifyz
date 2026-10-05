@@ -1,0 +1,25 @@
+<%- include('partials/head', { title: 'QuickBite — Home' }) %>
+
+<h1 style="<%- s.h1 %>">Welcome to QuickBite</h1>
+<p style="<%- s.muted %>">Order from your favourite local restaurants.</p>
+
+<div style="<%- s.grid %>">
+  <% restaurants.forEach(function(r) { %>
+    <div style="<%- s.card %>">
+      <h2 style="<%- s.h2 %>"><%= r.name %></h2>
+      <p style="<%- s.muted %>"><%= r.cuisine %> — <%= r.address %></p>
+      <p style="<%- s.muted %>"><%= r.menu.length %> items on the menu</p>
+      <a href="/order?restaurant=<%= r.id %>" style="<%- s.btnGhost %>">Order now →</a>
+    </div>
+  <% }); %>
+</div>
+
+<% if (typeof currentUser === 'undefined' || !currentUser) { %>
+  <div style="<%- s.card %>">
+    <h2 style="<%- s.h2 %>">Are you a restaurant owner?</h2>
+    <p style="<%- s.muted %>">Sign up as an owner to register your restaurant and receive orders.</p>
+    <a href="/register" style="<%- s.btnGhost %>">Get started →</a>
+  </div>
+<% } %>
+
+<%- include('partials/foot') %>

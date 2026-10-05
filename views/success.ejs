@@ -1,0 +1,52 @@
+<%- include('partials/head', { title: 'Order Placed' }) %>
+
+<div style="<%- s.okBox %>">
+  <strong>✅ Order placed successfully!</strong>
+</div>
+
+<div style="<%- s.card %>">
+  <h1 style="<%- s.h1 %>">Order #<%= order.id %></h1>
+  <p style="<%- s.muted %>">
+    Thank you, <strong><%= order.customerName %></strong>.
+    Your order from <strong><%= restaurant.name %></strong> is confirmed.
+  </p>
+
+  <table style="width:100%;border-collapse:collapse;margin-top:16px;">
+    <thead>
+      <tr>
+        <th style="<%- s.th %>">Item</th>
+        <th style="<%- s.th %>">Qty</th>
+        <th style="<%- s.th %>">Price</th>
+        <th style="<%- s.th %>">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% order.items.forEach(i => { %>
+        <tr>
+          <td style="<%- s.td %>"><%= i.name %></td>
+          <td style="<%- s.td %>"><%= i.qty %></td>
+          <td style="<%- s.td %>">₹<%= i.price %></td>
+          <td style="<%- s.td %>">₹<%= i.qty * i.price %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <p style="margin-top:16px;font-size:1.15rem;">
+    <strong>Total: ₹<%= order.total %></strong>
+  </p>
+  <p style="<%- s.muted %>">
+    Payment: <strong><%= order.payment %></strong> &nbsp;|&nbsp;
+    Status: <strong><%= order.status %></strong>
+  </p>
+  <p style="<%- s.muted %>">
+    Delivery address: <%= order.address %><br />
+    Contact: <%= order.phone %>
+  </p>
+
+  <a href="/" style="<%- s.btnGhost %>">← Back to Home</a>
+  &nbsp;
+  <a href="/order" style="<%- s.btnGhost %>">Order More →</a>
+</div>
+
+<%- include('partials/foot') %>

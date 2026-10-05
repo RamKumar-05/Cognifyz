@@ -1,0 +1,44 @@
+<%- include('partials/head', { title: 'Sign Up' }) %>
+
+<h1 style="<%- s.h1 %>">Create your QuickBite account</h1>
+<p style="<%- s.muted %>">Choose your role — order food as a customer or manage a restaurant as an owner.</p>
+
+<% if (Object.keys(errors).length) { %>
+  <div style="<%- s.errBox %>">Please fix the errors below.</div>
+<% } %>
+
+<div style="<%- s.card %>">
+  <form method="POST" action="/register">
+
+    <label style="<%- s.label %>">Full Name</label>
+    <input name="name" value="<%= values.name || '' %>" style="<%- s.input %>" />
+    <% if (errors.name) { %><span style="<%- s.err %>"><%= errors.name %></span><% } %>
+
+    <label style="<%- s.label %>">Email</label>
+    <input type="email" name="email" value="<%= values.email || '' %>" style="<%- s.input %>" />
+    <% if (errors.email) { %><span style="<%- s.err %>"><%= errors.email %></span><% } %>
+
+    <label style="<%- s.label %>">Password</label>
+    <input type="password" name="password" style="<%- s.input %>" />
+    <% if (errors.password) { %><span style="<%- s.err %>"><%= errors.password %></span><% } %>
+    <span style="<%- s.muted %>font-size:.8rem;">
+      Must be 8+ characters with uppercase, lowercase, number, and symbol.
+    </span>
+
+    <label style="<%- s.label %>">I am a...</label>
+    <select name="role" style="<%- s.input %>">
+      <option value="customer" <%= values.role === 'customer' ? 'selected' : '' %>>Customer — order food</option>
+      <option value="owner" <%= values.role === 'owner' ? 'selected' : '' %>>Restaurant Owner — manage my restaurant</option>
+    </select>
+    <% if (errors.role) { %><span style="<%- s.err %>"><%= errors.role %></span><% } %>
+
+    <button type="submit" style="<%- s.btn %>">Create Account</button>
+  </form>
+
+  <p style="margin-top:16px;">
+    Already have an account?
+    <a href="/login" style="<%- s.btnGhost %>">Login here</a>
+  </p>
+</div>
+
+<%- include('partials/foot') %>

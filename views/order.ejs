@@ -1,0 +1,84 @@
+<%- include('partials/head', { title: 'Place Order' }) %>
+
+<h1 style="<%- s.h1 %>">Place an Order</h1>
+<p style="<%- s.muted %>">Pick a restaurant, choose items, and confirm.</p>
+
+<% if (Object.keys(errors).length) { %>
+  <div style="<%- s.errBox %>">Please fix the errors below.</div>
+<% } %>
+
+<div style="<%- s.card %>">
+  <form method="GET" action="/order">
+    <label style="<%- s.label %>">Restaurant
+      <select name="restaurant" style="<%- s.input %>" onchange="this.form.submit()">
+        <option value="">-- Choose a restaurant --</option>
+        <% restaurants.forEach(function(r) { %>
+          <option value="<%= r.id %>" <%= values.restaurantId === r.id ? 'selected' : '' %>><%= r.name %> (<%= r.cuisine %>)</option>
+        <% }); %>
+      </select>
+    </label>
+  </form>
+</div>
+
+<% if (selectedRestaurant) { %>
+<form method="POST" action="/order" style="<%- s.card %>">
+  <input type="hidden" name="restaurantId" value="<%= selectedRestaurant.id %>" />
+
+  <h2 style="<%- s.h2 %>"><%= selectedRestaurant.name %> Menu</h2>
+
+  <% menu.forEach(function(m) { %>
+    <div style="<%- s.row %>">
+      <div>
+        <strong><%= m.name %></strong><br />
+        <span style="<%- s.muted %>">Rs <%= m.price %></span>
+        <% if (!m.available) { %>
+          <span style="color:#D93A2B;"> - Out of stock</span>
+        <% } %>
+      </div>
+      <input type="number" name="qty_<%= m.id %>" min="0" max="10" value="<%= values.qty[m.id] || 0 %>" style="<%- s.qty %>" <%= !m.available ? 'disabled' : '' %> />
+    </div>
+  <% }); %>
+
+  <% if (errors.items) { %>
+    <span style="<%- s.err %>"><%= errors.items %></span>
+  <% } %>
+
+  <label style="<%- s.label %>">Your Name</label>
+  <input name="customerName" value="<%= values.customerName || '' %>" style="<%- s.input %>" />
+  <% if (errors.customerName) { %>
+    <span style="<%- s.err %>"><%= errors.customerName %></span>
+  <% } %>
+
+  <label style="<%- s.label %>">Phone</label>
+  <input name="phone" value="<%= values.phone || '' %>" style="<%- s.input %>" />
+  <% if (errors.phone) { %>
+    <span style="<%- s.err %>"><%= errors.phone %></span>
+  <% } %>
+
+  <label style="<%- s.label %>">Delivery Address</label>
+  <textarea name="address" style="<%- s.input %>"><%= values.address || '' %></textarea>
+  <% if (errors.address) { %>
+    <span style="<%- s.err %>"><%= errors.address %></span>
+  <% } %>
+
+  <label style="<%- s.label %>">Payment</label>
+  <select name="payment" style="<%- s.input %>">
+    <option value="COD" <%= values.payment === 'COD' ? 'selected' : '' %>>Cash on Delivery</option>
+    <option value="UPI" <%= values.payment === 'UPI' ? 'selected' : '' %>>UPI</option>
+    <option value="CARD" <%= values.payment === 'CARD' ? 'selected' : '' %>>Card</option>
+  </select>
+  <% if (errors.payment) { %>
+    <span style="<%- s.err %>"><%= errors.payment %></span>
+  <% } %>
+
+  <label style="<%- s.label %>">Notes (optional)</label>
+  <textarea name="notes" style="<%- s.input %>"><%= values.notes || '' %></textarea>
+  <% if (errors.notes) { %>
+    <span style="<%- s.err %>"><%= errors.notes %></span>
+  <% } %>
+
+  <button type="submit" style="<%- s.btn %>">Place Order</button>
+</form>
+<% } %>
+
+<%- include('partials/foot') %>
